@@ -1,0 +1,71 @@
+# ==============================================================================
+# FICHIERS DE LOGS
+# ==============================================================================
+# Les logs contiennent des infos de débogage qu'on ne veut pas versionner
+# Ils sont régénérés à chaque exécution et peuvent être volumineux
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==============================================================================
+# DÉPENDANCES & BUILD
+# ==============================================================================
+# node_modules : dossier des packages npm (réinstallable via npm install)
+# Peut peser plusieurs centaines de Mo → jamais sur Git !
+node_modules
+
+# dist : dossier de build de production (généré par npm run build)
+# dist-ssr : build spécifique pour le Server-Side Rendering
+dist
+dist-ssr
+
+# ==============================================================================
+# VARIABLES D'ENVIRONNEMENT
+# ==============================================================================
+# .env contient les clés API et secrets (NE JAMAIS COMMITER)
+# *.local : fichiers d'environnement locaux spécifiques à chaque dev
+.env
+.env*.local
+*.local
+
+# ==============================================================================
+# ÉDITEURS DE CODE
+# ==============================================================================
+# Configuration spécifique à chaque développeur (thème, extensions...)
+# Exception : on garde .vscode/extensions.json pour recommander des extensions
+
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+
+# IntelliJ / WebStorm
+.idea
+
+# Autres éditeurs
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ==============================================================================
+# SYSTÈME D'EXPLOITATION
+# ==============================================================================
+# Fichiers cachés générés par macOS, Windows, Linux
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
