@@ -1,31 +1,15 @@
-import { getPopularMovies } from '../services/tmdbApi';
+import { getTrending, getPopularMovies } from '../services/tmdbApi';
 import ItemCard from '../components/ItemCard';
 import SkeletonCard from '../components/SkeletonCard';
+import Carousel from '../components/Carousel';
 import useFetch from '../hooks/useFetch';
 
 function HomePage() {
-  // Utilisation du custom hook (1 seule ligne au lieu de 15 !)
-  const { data: moviesData, loading, error } = useFetch(getPopularMovies, []);
-
-  // Affichage conditionnel : LOADING
-  if (loading) {
-    return (
-      <div className="container mx-auto p-8">
-        <h1 
-          className="text-4xl font-bold mb-8"
-          style={{ fontFamily: '"JetBrains Mono", monospace' }}
-        >
-          Films Populaires
-        </h1>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {[...Array(10)].map((_, index) => (
-            <SkeletonCard key={index} />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  // Récupère les tendances pour le carrousel
+  const { data: trendingData, loading: loadingTrending } = useFetch(getTrending, []);
+  
+  // Récupère les films populaires pour la section
+  const { data: moviesData, loading: loadingMovies, error } = useFetch(getPopularMovies, []);
 
   // Affichage conditionnel : ERROR
   if (error) {
@@ -45,24 +29,42 @@ function HomePage() {
     );
   }
 
-  // Extraction des films (gestion du cas où data est null)
+  const trending = trendingData?.results?.slice(0, 3) || [];
   const movies = moviesData?.results || [];
 
-  // Affichage conditionnel : SUCCESS
   return (
     <div className="container mx-auto p-8">
-      <h1 
-        className="text-4xl font-bold mb-8"
-        style={{ fontFamily: '"JetBrains Mono", monospace' }}
-      >
-        Films Populaires
-      </h1>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        {movies.slice(0, 10).map(movie => (
-          <ItemCard key={movie.id} item={movie} type="movie" />
-        ))}
-      </div>
+      {/* Carrousel de nouveautés */}
+      <section className="mb-12">
+        {loadingTrending ? (
+          <div className="h-[500px] bg-gray-700 rounded-lg animate-pulse"></div>
+        ) : (
+          <Carousel items={trending} />
+        )}
+      </section>
+
+      {/* Section Films populaires */}
+      <section>
+        <h2 
+          className="text-3xl font-bold mb-6"
+          style={{ fontFamily: '"JetBrains Mono", monospace' }}
+        >
+          Films Populaires
+        </h2>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          {loadingMovies ? (
+            [...Array(10)].map((_, index) => (
+              <SkeletonCard key={index} />
+            ))
+          ) : (
+            movies.slice(0, 10).map(movie => (
+              <ItemCard key={movie.id} item={movie} type="movie" />
+            ))
+          )}
+        </div>
+      </section>
     </div>
   );
 }

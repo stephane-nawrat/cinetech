@@ -50,3 +50,10 @@ export async function getPopularTVShows(page = 1) {
 export async function getDetails(type, id) {
   return fetchFromTMDB(`/${type}/${id}`);
 }
+
+// Fonction pour récupérer les nouveautés (films récents)
+export async function getTrending(mediaType = "all", timeWindow = "week") {
+  // mediaType: 'all', 'movie', 'tv'
+  // timeWindow: 'day', 'week'
+  return fetchFromTMDB(`/trending/${mediaType}/${timeWindow}`);
+}
