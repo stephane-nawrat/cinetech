@@ -22,3 +22,13 @@ input::placeholder {
   font-style: italic;
   font-size: 0.875rem;
 }
+
+/* Masque la scrollbar tout en gardant la fonctionnalité de scroll */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

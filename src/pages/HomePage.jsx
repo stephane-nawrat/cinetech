@@ -1,23 +1,38 @@
-import { getTrending, getPopularMovies } from '../services/tmdbApi';
-import ItemCard from '../components/ItemCard';
+import { getTrending, getPopularMovies, getPopularTVShows } from '../services/tmdbApi';
 import SkeletonCard from '../components/SkeletonCard';
 import Carousel from '../components/Carousel';
+import HorizontalSection from '../components/HorizontalSection';
 import useFetch from '../hooks/useFetch';
 
 function HomePage() {
   // Récupère les tendances pour le carrousel
   const { data: trendingData, loading: loadingTrending } = useFetch(getTrending, []);
   
-  // Récupère les films populaires pour la section
-  const { data: moviesData, loading: loadingMovies, error } = useFetch(getPopularMovies, []);
+  // Récupère les nouveautés pour la section
+  const { data: trendingWeekData, loading: loadingTrendingWeek } = useFetch(
+    () => getTrending('all', 'week'), 
+    []
+  );
+  
+  // Récupère les films populaires
+  const { data: moviesData, loading: loadingMovies, error: errorMovies } = useFetch(
+    getPopularMovies, 
+    []
+  );
+
+  // Récupère les séries populaires
+  const { data: tvShowsData, loading: loadingTVShows, error: errorTVShows } = useFetch(
+    getPopularTVShows, 
+    []
+  );
 
   // Affichage conditionnel : ERROR
-  if (error) {
+  if (errorMovies || errorTVShows) {
     return (
       <div className="container mx-auto p-8">
         <div className="bg-red-900 border border-red-500 text-white p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-2">Erreur de chargement</h2>
-          <p className="mb-4">{error}</p>
+          <p className="mb-4">{errorMovies || errorTVShows}</p>
           <button 
             onClick={() => window.location.reload()} 
             className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
@@ -30,7 +45,9 @@ function HomePage() {
   }
 
   const trending = trendingData?.results?.slice(0, 3) || [];
+  const trendingWeek = trendingWeekData?.results || [];
   const movies = moviesData?.results || [];
+  const tvShows = tvShowsData?.results || [];
 
   return (
     <div className="container mx-auto p-8">
@@ -44,27 +61,32 @@ function HomePage() {
         )}
       </section>
 
+      {/* Section Nouveautés */}
+      <HorizontalSection
+        title="Nouveautés de la semaine"
+        items={trendingWeek}
+        type="movie"
+        loading={loadingTrendingWeek}
+        SkeletonComponent={SkeletonCard}
+      />
+
       {/* Section Films populaires */}
-      <section>
-        <h2 
-          className="text-3xl font-bold mb-6"
-          style={{ fontFamily: '"JetBrains Mono", monospace' }}
-        >
-          Films Populaires
-        </h2>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {loadingMovies ? (
-            [...Array(10)].map((_, index) => (
-              <SkeletonCard key={index} />
-            ))
-          ) : (
-            movies.slice(0, 10).map(movie => (
-              <ItemCard key={movie.id} item={movie} type="movie" />
-            ))
-          )}
-        </div>
-      </section>
+      <HorizontalSection
+        title="Films populaires"
+        items={movies}
+        type="movie"
+        loading={loadingMovies}
+        SkeletonComponent={SkeletonCard}
+      />
+
+      {/* Section Séries populaires */}
+      <HorizontalSection
+        title="Séries populaires"
+        items={tvShows}
+        type="tv"
+        loading={loadingTVShows}
+        SkeletonComponent={SkeletonCard}
+      />
     </div>
   );
 }
