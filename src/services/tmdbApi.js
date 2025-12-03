@@ -57,3 +57,13 @@ export async function getTrending(mediaType = "all", timeWindow = "week") {
   // timeWindow: 'day', 'week'
   return fetchFromTMDB(`/trending/${mediaType}/${timeWindow}`);
 }
+
+// Fonction pour récupérer le casting d'un film ou série
+export async function getCredits(type, id) {
+  return fetchFromTMDB(`/${type}/${id}/credits`);
+}
+
+// Fonction pour récupérer des films/séries similaires
+export async function getSimilar(type, id) {
+  return fetchFromTMDB(`/${type}/${id}/similar`);
+}
