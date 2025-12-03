@@ -1,9 +1,11 @@
 import { useParams } from 'react-router-dom';
-import { getDetails, getCredits } from '../services/tmdbApi';
+import { getDetails, getCredits, getSimilar } from '../services/tmdbApi';
 import { getImageUrl } from '../services/tmdbApi';
 import { Star, Calendar, Clock, Heart } from 'lucide-react';
 import useFetch from '../hooks/useFetch';
 import CastCard from '../components/CastCard';
+import HorizontalSection from '../components/HorizontalSection';
+import SkeletonCard from '../components/SkeletonCard';
 import { useFavorites } from '../contexts/FavoritesContext';
 
 function DetailPage() {
@@ -20,6 +22,13 @@ function DetailPage() {
   // Récupère le casting
   const { data: creditsData, loading: loadingCredits } = useFetch(
     () => getCredits(type, id),
+    [type, id],
+    [type, id]
+  );
+
+  // Récupère les suggestions similaires
+  const { data: similarData, loading: loadingSimilar } = useFetch(
+    () => getSimilar(type, id),
     [type, id],
     [type, id]
   );
@@ -49,6 +58,7 @@ function DetailPage() {
   const releaseDate = details?.release_date || details?.first_air_date;
   const runtime = details?.runtime || details?.episode_run_time?.[0];
   const cast = creditsData?.cast?.slice(0, 10) || [];
+  const similar = similarData?.results || [];
 
   return (
     <div>
@@ -239,6 +249,19 @@ function DetailPage() {
             )}
           </div>
         </section>
+        
+{/* Suggestions similaires */}
+        {similar.length > 0 && (
+          <section className="mt-12">
+            <HorizontalSection
+              title={type === 'movie' ? 'Films similaires' : 'Séries similaires'}
+              items={similar}
+              type={type}
+              loading={loadingSimilar}
+              SkeletonComponent={SkeletonCard}
+            />
+          </section>
+        )}
       </div>
     </div>
   );
