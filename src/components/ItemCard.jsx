@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Heart, Play } from 'lucide-react';
 import { getImageUrl } from '../services/tmdbApi';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 function ItemCard({ item, type }) {
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const itemIsFavorite = isFavorite(item?.id);
+
     // Gère le titre (films = title, séries = name) avec sécurité
     const title = item?.title || item?.name || 'Sans titre';
 
@@ -53,17 +57,20 @@ function ItemCard({ item, type }) {
           </Link>
           
           {/* Bouton Favoris */}
-          <button 
-            className="bg-transparent border border-cyan-500 hover:bg-cyan-500 text-cyan-500 hover:text-white py-2 px-3 rounded-md transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              console.log('Ajouter aux favoris:', item.id);
-              // Fonction à brancher en Phase 5
-            }}
-            aria-label="Ajouter aux favoris"
-          >
-            <Heart size={20} />
-          </button>
+        <button 
+        className={`border py-2 px-3 rounded-md transition-colors ${
+            itemIsFavorite
+            ? 'bg-cyan-500 border-cyan-500 text-white'
+            : 'bg-transparent border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-white'
+        }`}
+        onClick={(e) => {
+            e.preventDefault();
+            toggleFavorite({ ...item, media_type: type });
+        }}
+        aria-label={itemIsFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+        >
+        <Heart size={20} className={itemIsFavorite ? 'fill-current' : ''} />
+        </button>
         </div>
       </div>
     </div>

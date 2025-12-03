@@ -4,9 +4,11 @@ import { getImageUrl } from '../services/tmdbApi';
 import { Star, Calendar, Clock, Heart } from 'lucide-react';
 import useFetch from '../hooks/useFetch';
 import CastCard from '../components/CastCard';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 function DetailPage() {
   const { type, id } = useParams();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Récupère les détails
   const { data: details, loading: loadingDetails, error: errorDetails } = useFetch(
@@ -123,14 +125,18 @@ function DetailPage() {
             </div>
 
             {/* Bouton Favoris */}
-            <button 
-              className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-3 rounded-lg transition-colors"
-              style={{ fontFamily: '"JetBrains Mono", monospace' }}
-              onClick={() => console.log('Ajouter aux favoris:', id)}
-            >
-              <Heart size={20} />
-              Ajouter aux favoris
-            </button>
+                    <button 
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
+              isFavorite(parseInt(id))
+                ? 'bg-red-500 hover:bg-red-600'
+                : 'bg-cyan-500 hover:bg-cyan-600'
+            } text-white`}
+            style={{ fontFamily: '"JetBrains Mono", monospace' }}
+            onClick={() => toggleFavorite({ ...details, media_type: type, id: parseInt(id) })}
+          >
+            <Heart size={20} className={isFavorite(parseInt(id)) ? 'fill-current' : ''} />
+            {isFavorite(parseInt(id)) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+          </button>
           </div>
         </div>
       </div>
