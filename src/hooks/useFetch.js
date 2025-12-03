@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
 
-function useFetch(fetchFunction, dependencies = []) {
-  // États pour gérer les données, le chargement et les erreurs
+function useFetch(fetchFunction, dependencies = [], params = []) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Réinitialise les états au début de chaque requête
     setLoading(true);
     setError(null);
 
-    // Exécute la fonction de fetch passée en paramètre
-    fetchFunction()
+    // Appelle la fonction avec les paramètres
+    fetchFunction(...params)
       .then((response) => {
         setData(response);
         setLoading(false);
@@ -21,9 +19,8 @@ function useFetch(fetchFunction, dependencies = []) {
         setError(err.message);
         setLoading(false);
       });
-  }, dependencies); // Re-exécute si les dépendances changent
+  }, [...dependencies, ...params]); // Re-exécute si les params changent
 
-  // Retourne un objet avec les 3 états
   return { data, loading, error };
 }
 
