@@ -1,23 +1,29 @@
+import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
+import ListPage from './pages/ListPage';
+import DetailPage from './pages/DetailPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       
-      <main className="flex-grow container mx-auto p-4">
-        <h1 className="text-4xl font-bold text-center">
-          Cinétech
-        </h1>
-        <p className="text-center mt-4">
-          Contenu principal ici (sera remplacé par les pages)
-        </p>
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/films" element={<ListPage type="movie" />} />
+          <Route path="/series" element={<ListPage type="tv" />} />
+          <Route path="/:type/:id" element={<DetailPage />} />
+          <Route path="/profil" element={<ProfilePage />} />
+        </Routes>
       </main>
 
       <Footer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
