@@ -3,11 +3,11 @@ import { Heart, Play } from 'lucide-react';
 import { getImageUrl } from '../services/tmdbApi';
 
 function ItemCard({ item, type }) {
-  // Gère le titre (films = title, séries = name)
-  const title = item.title || item.name;
-  
-  // Limite le synopsis à 150 caractères
-  const synopsis = item.overview 
+    // Gère le titre (films = title, séries = name) avec sécurité
+    const title = item?.title || item?.name || 'Sans titre';
+
+    // Limite le synopsis à 150 caractères avec sécurité
+    const synopsis = item?.overview 
     ? item.overview.slice(0, 150) + '...' 
     : 'Aucun synopsis disponible';
 

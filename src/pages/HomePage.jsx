@@ -1,25 +1,11 @@
-import { useEffect, useState } from 'react';
 import { getPopularMovies } from '../services/tmdbApi';
 import ItemCard from '../components/ItemCard';
 import SkeletonCard from '../components/SkeletonCard';
+import useFetch from '../hooks/useFetch';
 
 function HomePage() {
-  const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    setLoading(true);
-    getPopularMovies()
-      .then(data => {
-        setMovies(data.results);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  // Utilisation du custom hook (1 seule ligne au lieu de 15 !)
+  const { data: moviesData, loading, error } = useFetch(getPopularMovies, []);
 
   // Affichage conditionnel : LOADING
   if (loading) {
@@ -32,7 +18,6 @@ function HomePage() {
           Films Populaires
         </h1>
         
-        {/* Grille de skeletons */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {[...Array(10)].map((_, index) => (
             <SkeletonCard key={index} />
@@ -60,6 +45,9 @@ function HomePage() {
     );
   }
 
+  // Extraction des films (gestion du cas où data est null)
+  const movies = moviesData?.results || [];
+
   // Affichage conditionnel : SUCCESS
   return (
     <div className="container mx-auto p-8">
@@ -70,7 +58,6 @@ function HomePage() {
         Films Populaires
       </h1>
       
-      {/* Grille de cartes réelles */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {movies.slice(0, 10).map(movie => (
           <ItemCard key={movie.id} item={movie} type="movie" />
