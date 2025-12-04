@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Search, Heart, LogIn, Sun, Moon, X, User } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
@@ -6,12 +6,26 @@ import { useUser } from '../contexts/UserContext';
 function Header() {
   // État local pour gérer le thème actuel (light ou dark)
   const [theme, setTheme] = useState('dark');
-
-  const { user, isAuthenticated } = useUser();
   
   // État local pour gérer l'ouverture de la barre de recherche
   const [searchOpen, setSearchOpen] = useState(false);
+  
+  // État pour la recherche
+  const [searchQuery, setSearchQuery] = useState('');
 
+  const { user, isAuthenticated } = useUser();
+  const navigate = useNavigate();
+
+  // Fonction pour gérer la soumission de recherche
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery(''); // Vide le champ
+      setSearchOpen(false); // Ferme la barre
+    }
+  };
+  
   // Au montage du composant, récupère le thème sauvegardé ou applique 'dark' par défaut
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -96,26 +110,33 @@ function Header() {
         </button>
 
           ) : (
-            // Barre déployée : même style que "Mes vidéos"
-            <div 
+         // Barre déployée : même style que "Mes vidéos"
+            <form 
+              onSubmit={handleSearch}
               className="flex items-center gap-2 px-4 py-2 rounded-md"
               style={{ border: '0.5px solid currentColor' }}
             >
               <input 
                 type="text" 
-                placeholder="Rechercher..." 
-                className="w-96 bg-transparent focus:outline-none text-sm"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Film, série, acteur..." 
+                className="w-80 bg-transparent focus:outline-none text-sm"
                 style={{ fontFamily: 'Menlo, Monaco, monospace' }}
                 autoFocus
               />
               <button 
-                onClick={() => setSearchOpen(false)}
+                type="button"
+                onClick={() => {
+                  setSearchOpen(false);
+                  setSearchQuery('');
+                }}
                 className="text-cyan-500 hover:text-cyan-400"
                 aria-label="Fermer"
               >
-                <X size={22} />
+                <X size={16} />
               </button>
-            </div>
+            </form>
           )}
 
           {/* Mes vidéos avec bordure */}

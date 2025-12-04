@@ -67,3 +67,23 @@ export async function getCredits(type, id) {
 export async function getSimilar(type, id) {
   return fetchFromTMDB(`/${type}/${id}/similar`);
 }
+
+// Fonction pour rechercher (multi : films, séries, personnes)
+export async function searchMulti(query, page = 1) {
+  return fetchFromTMDB("/search/multi", { query, page });
+}
+
+// Fonction pour récupérer les détails d'une personne
+export async function getPersonDetails(personId) {
+  return fetchFromTMDB(`/person/${personId}`);
+}
+
+// Fonction pour récupérer la filmographie d'une personne
+export async function getPersonMovieCredits(personId) {
+  return fetchFromTMDB(`/person/${personId}/movie_credits`);
+}
+
+// Fonction pour récupérer les séries d'une personne
+export async function getPersonTVCredits(personId) {
+  return fetchFromTMDB(`/person/${personId}/tv_credits`);
+}

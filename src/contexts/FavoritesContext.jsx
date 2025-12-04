@@ -1,29 +1,36 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+import { useUser } from './UserContext';
 
-// Création du Context
 const FavoritesContext = createContext();
 
-// Provider qui enveloppe l'app
 export function FavoritesProvider({ children }) {
+  const { user } = useUser(); // Récupère l'utilisateur connecté
   const [favorites, setFavorites] = useState([]);
 
-  // Au montage, récupère les favoris depuis localStorage
+  // Fonction pour obtenir la clé localStorage selon l'utilisateur
+  const getFavoritesKey = () => {
+    return user ? `favorites_${user.username}` : 'favorites_anonymous';
+  };
+
+  // Charge les favoris au montage ET quand l'utilisateur change
   useEffect(() => {
-    const savedFavorites = localStorage.getItem('favorites');
+    const key = getFavoritesKey();
+    const savedFavorites = localStorage.getItem(key);
     if (savedFavorites) {
       setFavorites(JSON.parse(savedFavorites));
+    } else {
+      setFavorites([]); // Réinitialise si pas de favoris pour cet utilisateur
     }
-  }, []);
+  }, [user]); // Re-exécute quand user change
 
   // Sauvegarde dans localStorage à chaque modification
   useEffect(() => {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-  }, [favorites]);
+    const key = getFavoritesKey();
+    localStorage.setItem(key, JSON.stringify(favorites));
+  }, [favorites, user]);
 
-  // Ajouter un favori
   const addFavorite = (item) => {
     setFavorites(prev => {
-      // Vérifie si déjà présent
       if (prev.some(fav => fav.id === item.id)) {
         return prev;
       }
@@ -31,17 +38,14 @@ export function FavoritesProvider({ children }) {
     });
   };
 
-  // Retirer un favori
   const removeFavorite = (id) => {
     setFavorites(prev => prev.filter(fav => fav.id !== id));
   };
 
-  // Vérifier si un item est dans les favoris
   const isFavorite = (id) => {
     return favorites.some(fav => fav.id === id);
   };
 
-  // Toggle (ajoute si absent, retire si présent)
   const toggleFavorite = (item) => {
     if (isFavorite(item.id)) {
       removeFavorite(item.id);
@@ -65,7 +69,6 @@ export function FavoritesProvider({ children }) {
   );
 }
 
-// Hook personnalisé pour utiliser le context facilement
 export function useFavorites() {
   const context = useContext(FavoritesContext);
   if (!context) {
