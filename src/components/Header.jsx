@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Search, Heart, LogIn, Sun, Moon, X } from 'lucide-react';
+import { Search, Heart, LogIn, Sun, Moon, X, User } from 'lucide-react';
+import { useUser } from '../contexts/UserContext';
 
 function Header() {
   // État local pour gérer le thème actuel (light ou dark)
   const [theme, setTheme] = useState('dark');
+
+  const { user, isAuthenticated } = useUser();
   
   // État local pour gérer l'ouverture de la barre de recherche
   const [searchOpen, setSearchOpen] = useState(false);
@@ -125,13 +128,22 @@ function Header() {
             <span className="hidden lg:inline">Mes vidéos</span>
           </Link>
 
-          {/* Se connecter */}
+          {/* Se connecter / Utilisateur */}
           <Link 
             to="/profil" 
             className="flex items-center gap-2 hover:underline decoration-cyan-500 decoration-2 underline-offset-4"
           >
-            <LogIn size={18} />
-            <span>Se connecter</span>
+            {isAuthenticated ? (
+              <>
+                <User size={18} />
+                <span>{user.username}</span>
+              </>
+            ) : (
+              <>
+                <LogIn size={18} />
+                <span>Se connecter</span>
+              </>
+            )}
           </Link>
 
           {/* Toggle Theme */}
